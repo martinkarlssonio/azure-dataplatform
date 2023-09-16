@@ -1,0 +1,52 @@
+FROM ubuntu:20.04
+#USER root
+
+## Install misc tools
+RUN apt-get update && apt-get install -y python3
+RUN apt-get install -y curl gnupg apt-transport-https lsb-release
+RUN apt install -y jq
+RUN apt install -y zip
+
+# ## Install Docker
+# RUN apt-get -y install sudo
+# RUN useradd -m docker && echo "docker:docker" | chpasswd && adduser docker sudo
+# #USER docker
+# ENV TZ=Europe/Berlin \
+#     DEBIAN_FRONTEND=noninteractive
+# RUN apt-get update && apt-get install tzdata
+# RUN for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do apt-get remove $pkg; done
+# RUN apt-get update
+# RUN apt-get install ca-certificates curl gnupg
+# RUN install -m 0755 -d /etc/apt/keyrings
+# RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+# RUN chmod a+r /etc/apt/keyrings/docker.gpg
+# RUN echo \
+#     "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+#     "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+#     tee /etc/apt/sources.list.d/docker.list > /dev/null
+# RUN apt-get update
+# RUN apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+## Azure CLI
+RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+# RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+# RUN mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
+# RUN sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-$(lsb_release -cs)-prod $(lsb_release -cs) main" > /etc/apt/sources.list.d/dotnetdev.list'
+# RUN apt-get update
+# RUN apt-get install azure-functions-core-tools-4
+
+## Terraform
+RUN apt-get update && apt-get install -y gnupg software-properties-common
+RUN wget -O- https://apt.releases.hashicorp.com/gpg | \
+    gpg --dearmor | \
+    tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+RUN gpg --no-default-keyring \
+    --keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg \
+    --fingerprint
+RUN echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
+    https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
+    tee /etc/apt/sources.list.d/hashicorp.list
+RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --yes --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list > /dev/null
+RUN apt update
+RUN apt-get install -y terraform
