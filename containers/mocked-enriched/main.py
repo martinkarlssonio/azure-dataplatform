@@ -1,3 +1,7 @@
+"""
+This code is responsible for enriching the raw data with the time it took to close the tickets.
+"""
+
 import time
 import logging
 from datetime import datetime

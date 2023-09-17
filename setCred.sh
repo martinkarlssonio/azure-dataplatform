@@ -1,3 +1,5 @@
+## This script will create the needed credentials for the deployment
+## It is executed inside the container 'live-deploy'
 #Sign in to Azure
 echo "Signing in to Azure"
 subDetails=$(az login --use-device-code)

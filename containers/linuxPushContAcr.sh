@@ -1,3 +1,4 @@
+## This script will push the images to the Azure Container Registry
 # Load variables from .envTf
 cp ../output/.envTf .envTf
 cp ../output/.envBlob .env

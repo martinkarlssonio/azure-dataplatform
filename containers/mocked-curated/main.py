@@ -1,3 +1,8 @@
+"""
+This code is responsible for curating the enriched data. 
+It removes all rows where the category column has the value 'Hardware'.
+"""
+
 import time
 import logging
 from datetime import datetime

@@ -1,3 +1,6 @@
+## This script is used to run the deployment process on a Windows machine.
+## It will build the base image, deploy the core resources, build the containers and push them to ACR, and finally deploy the containers.
+
 Write-Host "######################################## EXECUTION STARTING ########################################"
 $env = "dev"
 Remove-Item -Recurse -Force "output" -ErrorAction SilentlyContinue

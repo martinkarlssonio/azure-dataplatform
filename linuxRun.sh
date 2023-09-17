@@ -1,3 +1,6 @@
+## This script is used to run the deployment process on a Linux machine.
+## It will build the base image, deploy the core resources, build the containers and push them to ACR, and finally deploy the containers.
+
 echo "######################################## EXECUTION STARTING ########################################"
 export env="dev"
 rm -rf output

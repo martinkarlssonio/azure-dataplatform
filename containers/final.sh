@@ -1,3 +1,6 @@
+## This script is used to create the final resources that are not possible to create with IaC templates.
+## Executed inside the container 'live-deploy' during Container deployment phase.
+
 ## Login to Az
 az login \
 --service-principal \

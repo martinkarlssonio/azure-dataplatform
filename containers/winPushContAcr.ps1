@@ -1,3 +1,4 @@
+## This script will push the images to the Azure Container Registry
 # Load variables from .envTf
 Write-Output "Start"
 Copy-Item -Path "../output/.envTf" -Destination ".envTf"

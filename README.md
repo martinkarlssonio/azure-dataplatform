@@ -1,4 +1,12 @@
 # Containerized Azure Dataplatform
+### A cost-efficient, containerized Azure Dataplatform with Azure Container Instance, Azure Container Registry, Azure Logic App and Azure Blob Storage. Local compute for data exploration in Jupyter Notebook.
+
+<!--
+*** Written by Martin Karlsson
+*** www.martinkarlsson.io
+-->
+
+[![LinkedIn][linkedin-shield]][linkedin-url]
 
 ## Architecture
 
@@ -38,17 +46,12 @@ https://learn.microsoft.com/en-us/cli/azure/install-azure-cli
     sudo dnf install azure-cli
 
 ##### Windows
-    $ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; Remove-Item .\AzureCLI.msi
+64bit
 
-Ensure you allow executing PowerShell scripts with:
+    https://aka.ms/installazurecliwindowsx64
+32bit
 
-###### Temporarily allow
-
-    Set-ExecutionPolicy RemoteSigned -Scope Process
-
-###### Permanently allow
-    
-    Set-ExecutionPolicy RemoteSigned
+    https://aka.ms/installazurecliwindows
 
 #### Install Docker
 ##### Linux (Fedora)
@@ -73,11 +76,6 @@ All the credentials will be automatically exported in the script to .env files, 
 
 #### Verify deployment
 After Execution the deployment should be possible to see at https://portal.azure.com/#view/HubsExtension/BrowseResourceGroups
-
-
-#### Helpful links
-https://learn.microsoft.com/en-us/cli/azure/
-https://learn.microsoft.com/en-us/cli/azure/reference-index?view=azure-cli-latest
 
 
 ## Deploy
@@ -114,7 +112,7 @@ Process-Image -imageName "my-new-container" -tag "dev"
 5. Done! You now have a new container in your stack.
 
 #### Changing container groups triggers
-The time for triggering the container groups are defined in side `containers/logicAppRaw` and `containers/logicAppEnriched` and `containers/logicAppCurated`.
+The time for triggering the container groups are defined in side `containers/logicAppRaw.json` and `containers/logicAppEnriched.json` and `containers/logicAppCurated.json`.
 If you would like to change it just edit this part
 
     "triggers": {
@@ -142,6 +140,17 @@ This one is an issue with Microsoft API response. Await a minute and re-run the 
 
 #### Unable to create Blob access in Notebook
 Ensure you are signed in, can be achieved by executing "az login --use-device-code" in seperate terminal.
+
+
+<!-- CONTACT -->
+## Contact
+
+### Martin Karlsson
+
+LinkedIn : [martin-karlsson][linkedin-url] \
+X : [@HelloKarlsson](https://x.com/HelloKarlsson) \
+Email : hello@martinkarlsson.io \
+Webpage : [www.martinkarlsson.io](https://www.martinkarlsson.io)
 
 <!-- MARKDOWN LINKS & IMAGES -->
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
