@@ -33,3 +33,5 @@ cd ..
 docker run --name deploy-container -v $(pwd)/output:/output -e "PHASE=containers" -e "TF_VAR_env=$env" live-deploy
 echo "################# Removing deploy-container"
 docker rm -f $(docker ps -a | grep 'deploy-container') || echo "deploy-container deleted"
+
+echo "################# DEPLOYMENT COMPLETED #################"

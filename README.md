@@ -141,6 +141,8 @@ This one is an issue with Microsoft API response. Await a minute and re-run the 
 #### Unable to create Blob access in Notebook
 Ensure you are signed in, can be achieved by executing "az login --use-device-code" in seperate terminal.
 
+#### Expired device code
+Re-run the deployment script and it will automatically refresh the device code.
 
 <!-- CONTACT -->
 ## Contact

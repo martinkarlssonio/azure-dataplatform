@@ -45,7 +45,7 @@ function process_image() {
         cp .env "${imageName}/.env"
         cp ../output/coreOutput.json "${imageName}/coreOutput.json"
         sleep 5
-        cd "${combinedName}"
+        cd "${imageName}"
         docker build -t "${combinedName}" .
         sleep 5
         docker images

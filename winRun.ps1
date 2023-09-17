@@ -88,3 +88,5 @@ if (-not [string]::IsNullOrEmpty($containerId)) {
     Write-Output "No 'deploy-container' found to remove."
 }
 
+
+Write-Host "################# DEPLOYMENT COMPLETED #################"
