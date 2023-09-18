@@ -8,6 +8,8 @@
 
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
+[![Medium][medium-logo]][medium-url]
+
 ## Architecture
 
 #### Cloud Architecture
@@ -157,5 +159,7 @@ Webpage : [www.martinkarlsson.io](https://www.martinkarlsson.io)
 <!-- MARKDOWN LINKS & IMAGES -->
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/martin-karlsson
+[medium-logo]: img/medium_logo.png
+[medium-url]: https://medium.com/@martinkarlsson.io/cost-efficient-data-platform-in-azure-harnessing-terraform-cointainers-polars-and-blob-storage-b8633ab90204
 [arch]: img/architecture.png
 [depArch]: img/deploymentArchitecture.png
