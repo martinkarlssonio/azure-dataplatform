@@ -18,12 +18,23 @@ data "azurerm_managed_api" "aci" {
   name     = "aci"
   location = azurerm_resource_group.rg.location
 }
-
-resource "azurerm_api_connection" "aci" {
-  name                = "aci"
+resource "azurerm_api_connection" "raw" {
+  name                = "aci-raw"
   resource_group_name = azurerm_resource_group.rg.name
   managed_api_id      = data.azurerm_managed_api.aci.id
-  display_name        = "aci"
+  display_name        = "aci-raw"
+}
+resource "azurerm_api_connection" "enriched" {
+  name                = "aci-enriched"
+  resource_group_name = azurerm_resource_group.rg.name
+  managed_api_id      = data.azurerm_managed_api.aci.id
+  display_name        = "aci-enriched"
+}
+resource "azurerm_api_connection" "curated" {
+  name                = "aci-curated"
+  resource_group_name = azurerm_resource_group.rg.name
+  managed_api_id      = data.azurerm_managed_api.aci.id
+  display_name        = "aci-curated"
 }
 
 ########## NETWORK ##########
@@ -119,10 +130,10 @@ resource "azurerm_logic_app_workflow" "raw" {
   workflow_version = "1.0.0.0"
 
   parameters = { "$connections" = jsonencode({
-    "${azurerm_api_connection.aci.name}" = {
-      connectionId   = "/subscriptions/${var.subscription_id}/resourceGroups/${azurerm_resource_group.rg.name}/providers/Microsoft.Web/connections/${azurerm_api_connection.aci.name}"
-      connectionName = "${azurerm_api_connection.aci.name}"
-      id             = "/subscriptions/${var.subscription_id}/providers/Microsoft.Web/locations/${azurerm_resource_group.rg.location}/managedApis/aci"
+    "${azurerm_api_connection.raw.name}" = {
+      connectionId   = "/subscriptions/${var.subscription_id}/resourceGroups/${azurerm_resource_group.rg.name}/providers/Microsoft.Web/connections/${azurerm_api_connection.raw.name}"
+      connectionName = "${azurerm_api_connection.raw.name}"
+      id             = "/subscriptions/${var.subscription_id}/providers/Microsoft.Web/locations/${azurerm_resource_group.rg.location}/managedApis/aci-raw"
     }
   }) }
   workflow_parameters = { "$connections" = jsonencode({
@@ -156,7 +167,7 @@ resource "azurerm_logic_app_action_custom" "raw" {
     "inputs": {
         "host": {
             "connection": {
-                "name": "@parameters('$connections')['${azurerm_api_connection.aci.name}']['connectionId']"
+                "name": "@parameters('$connections')['${azurerm_api_connection.raw.name}']['connectionId']"
             }
         },
         "method": "post",
@@ -210,7 +221,7 @@ resource "azurerm_container_group" "enriched" {
 }
 
 resource "azurerm_logic_app_workflow" "enriched" {
-  name                = "logicAppenriched"
+  name                = "logicAppEnriched"
   location            = var.rg_location
   resource_group_name = azurerm_resource_group.rg.name
 
@@ -223,10 +234,10 @@ resource "azurerm_logic_app_workflow" "enriched" {
   workflow_version = "1.0.0.0"
 
   parameters = { "$connections" = jsonencode({
-    "${azurerm_api_connection.aci.name}" = {
-      connectionId   = "/subscriptions/${var.subscription_id}/resourceGroups/${azurerm_resource_group.rg.name}/providers/Microsoft.Web/connections/${azurerm_api_connection.aci.name}"
-      connectionName = "${azurerm_api_connection.aci.name}"
-      id             = "/subscriptions/${var.subscription_id}/providers/Microsoft.Web/locations/${azurerm_resource_group.rg.location}/managedApis/aci"
+    "${azurerm_api_connection.enriched.name}" = {
+      connectionId   = "/subscriptions/${var.subscription_id}/resourceGroups/${azurerm_resource_group.rg.name}/providers/Microsoft.Web/connections/${azurerm_api_connection.enriched.name}"
+      connectionName = "${azurerm_api_connection.enriched.name}"
+      id             = "/subscriptions/${var.subscription_id}/providers/Microsoft.Web/locations/${azurerm_resource_group.rg.location}/managedApis/aci-enriched"
     }
   }) }
   workflow_parameters = { "$connections" = jsonencode({
@@ -260,7 +271,7 @@ resource "azurerm_logic_app_action_custom" "enriched" {
     "inputs": {
         "host": {
             "connection": {
-                "name": "@parameters('$connections')['${azurerm_api_connection.aci.name}']['connectionId']"
+                "name": "@parameters('$connections')['${azurerm_api_connection.enriched.name}']['connectionId']"
             }
         },
         "method": "post",
@@ -313,7 +324,7 @@ resource "azurerm_container_group" "curated" {
 }
 
 resource "azurerm_logic_app_workflow" "curated" {
-  name                = "logicAppcurated"
+  name                = "logicAppCurated"
   location            = var.rg_location
   resource_group_name = azurerm_resource_group.rg.name
 
@@ -326,10 +337,10 @@ resource "azurerm_logic_app_workflow" "curated" {
   workflow_version = "1.0.0.0"
 
   parameters = { "$connections" = jsonencode({
-    "${azurerm_api_connection.aci.name}" = {
-      connectionId   = "/subscriptions/${var.subscription_id}/resourceGroups/${azurerm_resource_group.rg.name}/providers/Microsoft.Web/connections/${azurerm_api_connection.aci.name}"
-      connectionName = "${azurerm_api_connection.aci.name}"
-      id             = "/subscriptions/${var.subscription_id}/providers/Microsoft.Web/locations/${azurerm_resource_group.rg.location}/managedApis/aci"
+    "${azurerm_api_connection.curated.name}" = {
+      connectionId   = "/subscriptions/${var.subscription_id}/resourceGroups/${azurerm_resource_group.rg.name}/providers/Microsoft.Web/connections/${azurerm_api_connection.curated.name}"
+      connectionName = "${azurerm_api_connection.curated.name}"
+      id             = "/subscriptions/${var.subscription_id}/providers/Microsoft.Web/locations/${azurerm_resource_group.rg.location}/managedApis/aci-curated"
     }
   }) }
   workflow_parameters = { "$connections" = jsonencode({
@@ -363,7 +374,7 @@ resource "azurerm_logic_app_action_custom" "curated" {
     "inputs": {
         "host": {
             "connection": {
-                "name": "@parameters('$connections')['${azurerm_api_connection.aci.name}']['connectionId']"
+                "name": "@parameters('$connections')['${azurerm_api_connection.curated.name}']['connectionId']"
             }
         },
         "method": "post",
