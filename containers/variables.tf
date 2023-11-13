@@ -60,6 +60,7 @@ variable "rg_location" {
     type        = string
     description = "Resource group location, generated in core deployment as ENV variable."
 }
+
 # variable "rg_name" {
 #     type        = string
 #     description = "TBA"
@@ -109,9 +110,20 @@ variable "subscription_id" {
 variable "env" {
     type        = string
     description = "Environvent to deploy to."
+    default    = "dev"
 }
 
 variable "acr_access_token" {
     type        = string
     description = "ACR Access Token"
 }
+
+# variable "man_id" {
+#     type        = string
+#     description = "Managed Identity ID"
+# }
+
+# variable "man_prin_id" {
+#     type        = string
+#     description = "Managed Identity Principal ID"
+# }

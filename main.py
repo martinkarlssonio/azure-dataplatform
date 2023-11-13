@@ -93,6 +93,9 @@ def coreExist():
     os.system('echo "TF_VAR_rg_name=${TF_VAR_rg_name}" >> /output/.envTf')
     os.system('cd core && bash exportStaccKey.sh')
     os.system('cd core && bash exportAcrKey.sh')
+    print("Starting exportManId")
+    os.system('cd core && bash exportManId.sh')
+    print("DONE exportManId")
     return
 
 def coreNotExist():
@@ -110,6 +113,9 @@ def coreNotExist():
             terraform apply main.tfplan && \
             echo 'Exporting output from Core Terraform...' && \
             bash exportTfOutput.sh && \
+            bash exportStaccKey.sh && \
+            bash exportAcrKey.sh && \
+            bash exportManId.sh && \
             cp coreOutput.json ../containers/coreOutput.json &&\
             cp coreOutput.json /output/coreOutput.json\
                 ")
@@ -127,16 +133,30 @@ def deployContainers():
     # Containers should already be pushed to ACR prior to this step
     if loadEnvVar():
         os.system("cd containers && bash setAcrAccess.sh")
+        # with open("/output/man_id", "r") as file:
+        #     man_id = file.read()
+        #     man_id = man_id.replace("\n", "")
+        #     man_id = man_id.replace("resourcegroups", "resourceGroups")
+        # with open("/output/man_prin_id", "r") as file:
+        #     man_prin_id = file.read()
+        #     man_prin_id = man_prin_id.replace("\n", "")
+        #     man_prin_id = man_prin_id.replace("resourcegroups", "resourceGroups")
+        # os.environ["TF_VAR_man_id"] = man_id
+        # os.environ["TF_VAR_man_prin_id"] = man_prin_id
         loadEnvVar()
         os.system("cd containers && \
-                bash deleteOldDeploy.sh && \
-                terraform init -upgrade && \
-                terraform plan -out main.tfplan && \
-                terraform apply main.tfplan && \
-                source ./exportTfOutput.sh && \
-                sleep 10 && \
                 bash final.sh \
                 ")
+        # os.system("cd containers && \
+        #         bash deleteOldDeploy.sh && \
+        #         bash setAcrAccess.sh && \
+        #         terraform init -upgrade && \
+        #         terraform plan -out main.tfplan && \
+        #         terraform apply main.tfplan && \
+        #         source ./exportTfOutput.sh && \
+        #         sleep 10 && \
+        #         bash final.sh \
+        #         ")
     else:
         print("Could not load environment variables")
         return False

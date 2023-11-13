@@ -63,4 +63,4 @@ function process_image() {
 process_image "mocked-raw" "dev"
 # process_image "mocked-enriched" "dev"
 # process_image "mocked-curated" "dev"
-process_image "container-scheduler" "dev"
+# process_image "container-scheduler" "dev"

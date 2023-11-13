@@ -34,37 +34,67 @@ resource "azurerm_subnet" "containers" {
   }
 }
 
-########## CONTAINER SCHEDULER CONTAINER GROUP ##########
-resource "azurerm_container_group" "container-scheduler" {
-  name                = "${var.env}-container-scheduler"
-  location            = "${var.rg_location}"
-  resource_group_name = azurerm_resource_group.rg.name
-  ip_address_type     = "Private"
-  subnet_ids          = [azurerm_subnet.containers.id]
-  os_type             = "Linux"
-  restart_policy      = "Never" #"OnFailure"
+# ########## CONTAINER SCHEDULER CONTAINER GROUP ##########
+# resource "azurerm_container_group" "container-scheduler" {
+#   name                = "${var.env}-container-scheduler"
+#   location            = "${var.rg_location}"
+#   resource_group_name = azurerm_resource_group.rg.name
+#   ip_address_type     = "Private"
+#   subnet_ids          = [azurerm_subnet.containers.id]
+#   os_type             = "Linux"
+#   restart_policy      = "Never" #"OnFailure"
 
-  image_registry_credential {
-    #username = "00000000-0000-0000-0000-000000000000"  # username when using access token
-    #password = "${var.acr_access_token}"               # Use the access token here
-    username = "${var.acr_username}"
-    password = "${var.acr_password}"
-    server   = "${var.acr_name}.azurecr.io"
-  }
+#   image_registry_credential {
+#     #username = "00000000-0000-0000-0000-000000000000"  # username when using access token
+#     #password = "${var.acr_access_token}"               # Use the access token here
+#     username = "${var.acr_username}"
+#     password = "${var.acr_password}"
+#     server   = "${var.acr_name}.azurecr.io"
+#   }
 
-  container {
-    name   = "container-scheduler"
-    image  = "${var.acr_name}.azurecr.io/container-scheduler:dev"
-    cpu    = 0.1
-    memory = 0.1
-    ports {
-      port     = 49151
-      protocol = "TCP"
-    }
-  }
-}
+#   container {
+#     name   = "container-scheduler"
+#     image  = "${var.acr_name}.azurecr.io/container-scheduler:dev"
+#     cpu    = 0.1
+#     memory = 0.1
+#     ports {
+#       port     = 49151
+#       protocol = "TCP"
+#     }
+#   }
+# }
 
 ########## RAW CONTAINER GROUP ##########
+# resource "azurerm_container_group" "raw" {
+#   name                = "${var.env}-dp-raw"
+#   location            = "${var.rg_location}"
+#   resource_group_name = azurerm_resource_group.rg.name
+#   ip_address_type     = "Private"
+#   subnet_ids          = [azurerm_subnet.containers.id]
+#   os_type             = "Linux"
+#   restart_policy      = "Never" #"OnFailure"
+
+#   image_registry_credential {
+#     #username = "00000000-0000-0000-0000-000000000000"  # username when using access token
+#     #password = "${var.acr_access_token}"               # Use the access token here
+#     username = "${var.acr_username}"
+#     password = "${var.acr_password}"
+#     server   = "${var.acr_name}.azurecr.io"
+#   }
+
+#   container {
+#     name   = "mocked-raw"
+#     image  = "${var.acr_name}.azurecr.io/mocked-raw:dev"
+#     cpu    = 1
+#     memory = 2
+#     ports {
+#       port     = 49152
+#       protocol = "TCP"
+#     }
+#   }
+# }
+
+
 resource "azurerm_container_group" "raw" {
   name                = "${var.env}-dp-raw"
   location            = "${var.rg_location}"
@@ -82,6 +112,11 @@ resource "azurerm_container_group" "raw" {
     server   = "${var.acr_name}.azurecr.io"
   }
 
+  # Assign an identity
+  identity {
+    type = "SystemAssigned"
+  }
+
   container {
     name   = "mocked-raw"
     image  = "${var.acr_name}.azurecr.io/mocked-raw:dev"
@@ -93,6 +128,40 @@ resource "azurerm_container_group" "raw" {
     }
   }
 }
+
+# Create an identity for the logic app
+resource "azurerm_user_assigned_identity" "logic_app" {
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = var.rg_location
+  name                = "logic_app"
+}
+
+# Assign the identity access to ACR
+resource "azurerm_role_assignment" "logic_app" {
+  scope                = "/subscriptions/${var.subscription_id}" #/resourceGroups/${var.env}-dataplatform-core/providers/Microsoft.ContainerRegistry/registries/${var.acr_name}"
+  role_definition_name = "owner"
+  principal_id         = azurerm_user_assigned_identity.logic_app.principal_id
+}
+
+# resource "null_resource" "create_web_connection" {
+#   provisioner "local-exec" {
+#     command = <<EOT
+#       az resource create \
+#       --resource-type "Microsoft.Web/connections" \
+#       --name "aci" \
+#       --resource-group "${var.env}-dataplatform-container" \
+#       --location ${var.rg_location} \
+#       --properties '{ \
+#         "displayName": "aci", \
+#         "api": { \
+#           "id": "subscriptions/${var.subscription_id}/providers/Microsoft.Web/locations/germanywestcentral/managedApis/aci" \
+#         } \
+#       }'
+#     EOT
+#   }
+# }
+
+
 
 # #### ENRICHED
 # resource "azurerm_container_group" "enriched" {

@@ -25,7 +25,3 @@ TF_VAR_acr_name=$(echo ${outputJson} | jq .acr_name.value)
 export TF_VAR_acr_name=$(echo ${TF_VAR_acr_name//'"'})
 #echo "ACR NAME : ${TF_VAR_acr_name}"
 echo "TF_VAR_acr_name=${TF_VAR_acr_name}" >> /output/.envTf
-
-#Export STACC Access Key
-bash exportStaccKey.sh
-bash exportAcrKey.sh

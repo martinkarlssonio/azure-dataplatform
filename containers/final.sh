@@ -105,32 +105,57 @@ acr_password=$(cat /output/acr_password)
 #     \"id\": \"subscriptions/$TF_VAR_subscription_id/providers/Microsoft.Web/locations/germanywestcentral/managedApis/aci\" \
 #   } \
 # }"
-az resource create \
---resource-type "Microsoft.Web/connections" \
---name "aci" \
---resource-group "${TF_VAR_env}-dataplatform-container" \
---location ${TF_VAR_rg_location} \
---properties "{ \
-  \"displayName\": \"aci\", \
-  \"parameterValues\": { \
-    \"token:username\": \"$acr_username\", \
-    \"token:password\": \"$acr_password\", \
-    \"token:grantType\": \"password\" \
-  }, \
-  \"api\": { \
-    \"id\": \"subscriptions/$TF_VAR_subscription_id/providers/Microsoft.Web/locations/germanywestcentral/managedApis/aci\" \
-  } \
-}"
+
+# az resource create \
+# --resource-type "Microsoft.Web/connections" \
+# --name "aci" \
+# --resource-group "${TF_VAR_env}-dataplatform-container" \
+# --location ${TF_VAR_rg_location} \
+# --properties "{ \
+#   \"displayName\": \"aci\", \
+#   \"parameterValues\": { \
+#     \"token:username\": \"$acr_username\", \
+#     \"token:password\": \"$acr_password\", \
+#     \"token:grantType\": \"password\" \
+#   }, \
+#   \"api\": { \
+#     \"id\": \"subscriptions/$TF_VAR_subscription_id/providers/Microsoft.Web/locations/germanywestcentral/managedApis/aci\" \
+#   } \
+# }"
+
+
 
 ### RAW LOGIC APP
+
+echo "################# Creating Raw Logic App"
 cp logicAppRaw.json build/logicAppRaw.json
 cd build
 sed -i "s/TF_VAR_subscription_id/$TF_VAR_subscription_id/" logicAppRaw.json
 sed -i "s/TF_VAR_rg_name/${TF_VAR_env}-dataplatform-container/" logicAppRaw.json
 sed -i "s/TF_VAR_raw_ctgrp_name/$TF_VAR_raw_ctgrp_name/" logicAppRaw.json
 sed -i "s/TF_VAR_rg_location/$TF_VAR_rg_location/" logicAppRaw.json
-echo "################# Creating Raw Logic App"
-az logic workflow create --resource-group ${TF_VAR_env}-dataplatform-container/ --location ${TF_VAR_rg_location} --name "logicAppRaw" --definition "logicAppRaw.json"
+
+## Create the Container Instances connection
+az resource create \
+  --resource-type "Microsoft.Web/connections" \
+  --name "aci" \
+  --resource-group "${TF_VAR_env}-dataplatform-container" \
+  --location ${TF_VAR_rg_location} \
+  --properties "{ \
+    \"displayName\": \"aci\", \
+    \"api\": { \
+      \"id\": \"subscriptions/$TF_VAR_subscription_id/providers/Microsoft.Web/locations/germanywestcentral/managedApis/aci\" \
+    } \
+  }"
+
+az logic workflow create \
+  --resource-group ${TF_VAR_env}-dataplatform-container \
+  --location ${TF_VAR_rg_location} \
+  --name "logicAppRaw" \
+  --definition "logicAppRaw.json"
+
+## Get the managed identity ID
+# man_id=$(az identity show --name "logic_app" --resource-group "${TF_VAR_env}-dataplatform-container" --query id --output tsv)
 
 # ### ENRICHED LOGIC APP
 # cd ..
