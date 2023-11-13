@@ -100,9 +100,6 @@ def coreExist():
 
 def coreNotExist():
     print("Core not yet deployed, deploying it!")
-    # Setting Terraform Trace Logs
-    # os.environ["TF_LOG"] = "TRACE"
-    # os.system('export TF_LOG="TRACE"')
     loadEnvVar()
     os.system("cd core && \
             echo '#################################### Terraform Init' && \
@@ -113,42 +110,16 @@ def coreNotExist():
             terraform apply main.tfplan && \
             echo 'Exporting output from Core Terraform...'")
     coreExist()
-            #   && \
-            # bash exportTfOutput.sh && \
-            # bash exportStaccKey.sh && \
-            # bash exportAcrKey.sh && \
-            # bash exportManId.sh && \
-            # cp coreOutput.json ../containers/coreOutput.json &&\
-            # cp coreOutput.json /output/coreOutput.json\
-            #     ")
     return True
 
 def deployContainers():
     # Add Azure credentials to the deployment container
     os.system("cp -r /output/.azure ~/.azure")
     os.system("cp -r /output/.azure /root/.azure")
-    # Triggered if the environmental variable is set to containers
     print("Deploying Containers...")
-    # Setting Terraform Trace Logs
-    # os.environ["TF_LOG"] = "TRACE"
-    # os.system('export TF_LOG="TRACE"')
-    # Containers should already be pushed to ACR prior to this step
     if loadEnvVar():
         os.system("cd containers && bash setAcrAccess.sh")
-        # with open("/output/man_id", "r") as file:
-        #     man_id = file.read()
-        #     man_id = man_id.replace("\n", "")
-        #     man_id = man_id.replace("resourcegroups", "resourceGroups")
-        # with open("/output/man_prin_id", "r") as file:
-        #     man_prin_id = file.read()
-        #     man_prin_id = man_prin_id.replace("\n", "")
-        #     man_prin_id = man_prin_id.replace("resourcegroups", "resourceGroups")
-        # os.environ["TF_VAR_man_id"] = man_id
-        # os.environ["TF_VAR_man_prin_id"] = man_prin_id
         loadEnvVar()
-        # os.system("cd containers && \
-        #         bash final.sh \
-        #         ")
         os.system("cd containers && \
                 bash deleteOldDeploy.sh && \
                 bash setAcrAccess.sh && \
