@@ -93,9 +93,6 @@ def coreExist():
     os.system('echo "TF_VAR_rg_name=${TF_VAR_rg_name}" >> /output/.envTf')
     os.system('cd core && bash exportStaccKey.sh')
     os.system('cd core && bash exportAcrKey.sh')
-    print("Starting exportManId")
-    os.system('cd core && bash exportManId.sh')
-    print("DONE exportManId")
     return
 
 def coreNotExist():
@@ -121,15 +118,12 @@ def deployContainers():
         os.system("cd containers && bash setAcrAccess.sh")
         loadEnvVar()
         os.system("cd containers && \
-                bash deleteOldDeploy.sh && \
+                az group delete --resource-group ${TF_VAR_env}-dataplatform-container --yes || echo 'No existing Container RG' && \
                 bash setAcrAccess.sh && \
                 terraform init -upgrade && \
                 terraform plan -out main.tfplan && \
                 terraform apply main.tfplan && \
-                source ./exportTfOutput.sh && \
-                sleep 10 && \
-                bash final.sh \
-                ")
+                source ./exportTfOutput.sh")
     else:
         print("Could not load environment variables")
         return False

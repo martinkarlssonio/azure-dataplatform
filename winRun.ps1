@@ -77,10 +77,6 @@ Write-Host $(Get-Location)
 Start-Sleep -Seconds 10
 
 ########################## DEPLOY CONTAINERS RESOURCES
-# $currentPath = (Get-Location).Path
-# Write-Host "## Mounting volume : "
-# Write-Host "${currentPath}\output"
-# docker run --name deploy-container -v "${currentPath}\output:/output" -e "PHASE=containers" -e "TF_VAR_env=$env" live-deploy
 docker run --name deploy-container -v "$(Get-Location)/output:/output" -e "PHASE=containers" -e "TF_VAR_env=$env" live-deploy
 
 Write-Host "################# Removing deploy-container"
