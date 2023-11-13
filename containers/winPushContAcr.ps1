@@ -15,27 +15,8 @@ Get-Content .envTf | ForEach-Object {
     }
 }
 
-# # Define the environment variables
-# $tenantId = $env:TF_VAR_arm_tenant_id
-# $clientId = $env:TF_VAR_arm_client_id
-# $clientSecret = $env:TF_VAR_arm_client_secret
-
-# # Login to Azure
-# az login `
-# --service-principal `
-# --tenant $tenantId `
-# --username $clientId `
-# --password $clientSecret `
-# --output table
-
-
 
 Start-Sleep -Seconds 5
-# Verify if variables are loaded
-# Write-Output "TF_VAR_arm_client_id: $env:TF_VAR_arm_client_id"
-# Write-Output "TF_VAR_arm_client_secret: $env:TF_VAR_arm_client_secret"
-
-# az acr login --name $env:TF_VAR_acr_name --username "$env:TF_VAR_arm_client_id" --password "$env:TF_VAR_arm_client_secret"
 az acr login --name $env:TF_VAR_acr_name
 Start-Sleep -Seconds 2
 
@@ -82,5 +63,5 @@ function Process-Image {
 ###################### IMAGES TO PROCESS
 ## If you want to release a new version of an image, do not forget to change the tag both here and in terraform.
 Process-Image -imageName "mocked-raw" -tag "dev"
-# Process-Image -imageName "mocked-enriched" -tag "dev"
-# Process-Image -imageName "mocked-curated" -tag "dev"
+Process-Image -imageName "mocked-enriched" -tag "dev"
+Process-Image -imageName "mocked-curated" -tag "dev"

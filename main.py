@@ -111,14 +111,16 @@ def coreNotExist():
             terraform plan -out main.tfplan && \
             echo '#################################### Terraform Apply' && \
             terraform apply main.tfplan && \
-            echo 'Exporting output from Core Terraform...' && \
-            bash exportTfOutput.sh && \
-            bash exportStaccKey.sh && \
-            bash exportAcrKey.sh && \
-            bash exportManId.sh && \
-            cp coreOutput.json ../containers/coreOutput.json &&\
-            cp coreOutput.json /output/coreOutput.json\
-                ")
+            echo 'Exporting output from Core Terraform...'")
+    coreExist()
+            #   && \
+            # bash exportTfOutput.sh && \
+            # bash exportStaccKey.sh && \
+            # bash exportAcrKey.sh && \
+            # bash exportManId.sh && \
+            # cp coreOutput.json ../containers/coreOutput.json &&\
+            # cp coreOutput.json /output/coreOutput.json\
+            #     ")
     return True
 
 def deployContainers():
