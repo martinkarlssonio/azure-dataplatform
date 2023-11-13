@@ -143,6 +143,110 @@ resource "azurerm_role_assignment" "logic_app" {
   principal_id         = azurerm_user_assigned_identity.logic_app.principal_id
 }
 
+resource "azurerm_logic_app_workflow" "logicAppRaw" {
+  name                = "logicAppRaw"
+  location            = var.rg_location
+  resource_group_name = azurerm_resource_group.rg.name
+
+  identity {
+    type = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.logic_app.id]
+  }
+
+  workflow_schema = "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#"
+  workflow_version = "1.0.0.0"
+
+  # parameters = {
+  #     "actions" = jsonencode({
+  #       Start_containers_in_a_container_group = {
+  #         inputs = {
+  #           host = {
+  #             connection = {
+  #               name = "@parameters('$connections')['aci']['connectionId']"
+  #             }
+  #           },
+  #           method = "post",
+  #           path = "/subscriptions/@{encodeURIComponent('1d4234cf-2e23-4600-897e-300f194cae95')}/resourceGroups/@{encodeURIComponent('dev-dataplatform-container')}/providers/Microsoft.ContainerInstance/containerGroups/@{encodeURIComponent('dev-dp-raw')}/start",
+  #           queries = {
+  #             "x-ms-api-version" = "2019-12-01"
+  #           }
+  #         },
+  #         runAfter = {},
+  #         type = "ApiConnection"
+  #       }
+  #     }),
+  #     "triggers" = jsonencode({
+  #       Recurrence = {
+  #         evaluatedRecurrence = {
+  #           frequency = "Minute",
+  #           interval = 20
+  #         },
+  #         recurrence = {
+  #           frequency = "Minute",
+  #           interval = 20
+  #         },
+  #         type = "Recurrence"
+  #       }
+  #     }),
+  #   "$connections" = jsonencode({
+  #       "aci" = {
+  #         connectionId = "/subscriptions/1d4234cf-2e23-4600-897e-300f194cae95/resourceGroups/dev-dataplatform-container/providers/Microsoft.Web/connections/aci",
+  #         connectionName = "aci",
+  #         connectionProperties = {
+  #           authentication = {
+  #             identity = "/subscriptions/1d4234cf-2e23-4600-897e-300f194cae95/resourceGroups/dev-dataplatform-container/providers/Microsoft.ManagedIdentity/userAssignedIdentities/logic_app",
+  #             type = "ManagedServiceIdentity"
+  #           }
+  #         },
+  #         id = "/subscriptions/1d4234cf-2e23-4600-897e-300f194cae95/providers/Microsoft.Web/locations/germanywestcentral/managedApis/aci"
+  #       }
+  #   })
+  # }
+}
+
+# resource "azurerm_logic_app_workflow" "raw" {
+#   name                = "logicAppRaw"
+#   location            = var.rg_location
+#   resource_group_name = azurerm_resource_group.rg.name
+
+#   identity {
+#     type = "UserAssigned"
+#     identity_ids = [azurerm_user_assigned_identity.logic_app.id]
+#   }
+
+#   parameters = { "$connections" = jsonencode({
+#     "${azurerm_api_connection.aci.name}" = {
+#       connectionId   = "/subscriptions/${var.subscription_id}/resourceGroups/${azurerm_resource_group.rg.name}/providers/Microsoft.Web/connections/${azurerm_api_connection.aci.name}"
+#       connectionName = "${azurerm_api_connection.aci.name}"
+#       id             = "/subscriptions/${var.subscription_id}/providers/Microsoft.Web/locations/${azurerm_resource_group.rg.location}/managedApis/aci"
+#     }
+#   }) }
+#   workflow_parameters = { "$connections" = jsonencode({
+#     defaultValue = {}
+#     type         = "Object"
+#   }) }
+# }
+
+
+## API Connection (used by Logic Apps to trigger Container Groups)
+# https://learn.microsoft.com/en-us/connectors/custom-connectors/faq
+data "azurerm_managed_api" "aci" {
+  name     = "aci"
+  location = azurerm_resource_group.rg.location
+}
+
+resource "azurerm_api_connection" "aci" {
+  name                = "aci"
+  resource_group_name = azurerm_resource_group.rg.name
+  managed_api_id      = data.azurerm_managed_api.aci.id
+  display_name        = "aci"
+
+  # parameter_values = {
+  #   "managedIdentityAuth" = jsonencode({})
+  # }
+}
+
+
 # resource "null_resource" "create_web_connection" {
 #   provisioner "local-exec" {
 #     command = <<EOT

@@ -135,24 +135,24 @@ sed -i "s/TF_VAR_rg_name/${TF_VAR_env}-dataplatform-container/" logicAppRaw.json
 sed -i "s/TF_VAR_raw_ctgrp_name/$TF_VAR_raw_ctgrp_name/" logicAppRaw.json
 sed -i "s/TF_VAR_rg_location/$TF_VAR_rg_location/" logicAppRaw.json
 
-## Create the Container Instances connection
-az resource create \
-  --resource-type "Microsoft.Web/connections" \
-  --name "aci" \
-  --resource-group "${TF_VAR_env}-dataplatform-container" \
-  --location ${TF_VAR_rg_location} \
-  --properties "{ \
-    \"displayName\": \"aci\", \
-    \"api\": { \
-      \"id\": \"subscriptions/$TF_VAR_subscription_id/providers/Microsoft.Web/locations/germanywestcentral/managedApis/aci\" \
-    } \
-  }"
+# ## Create the Container Instances connection
+# az resource create \
+#   --resource-type "Microsoft.Web/connections" \
+#   --name "aci" \
+#   --resource-group "${TF_VAR_env}-dataplatform-container" \
+#   --location ${TF_VAR_rg_location} \
+#   --properties "{ \
+#     \"displayName\": \"aci\", \
+#     \"api\": { \
+#       \"id\": \"subscriptions/$TF_VAR_subscription_id/providers/Microsoft.Web/locations/germanywestcentral/managedApis/aci\" \
+#     } \
+#   }"
 
-az logic workflow create \
-  --resource-group ${TF_VAR_env}-dataplatform-container \
-  --location ${TF_VAR_rg_location} \
-  --name "logicAppRaw" \
-  --definition "logicAppRaw.json"
+# az logic workflow create \
+#   --resource-group ${TF_VAR_env}-dataplatform-container \
+#   --location ${TF_VAR_rg_location} \
+#   --name "logicAppRaw" \
+#   --definition "logicAppRaw.json"
 
 ## Get the managed identity ID
 # man_id=$(az identity show --name "logic_app" --resource-group "${TF_VAR_env}-dataplatform-container" --query id --output tsv)

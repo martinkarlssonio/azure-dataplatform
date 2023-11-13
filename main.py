@@ -144,19 +144,19 @@ def deployContainers():
         # os.environ["TF_VAR_man_id"] = man_id
         # os.environ["TF_VAR_man_prin_id"] = man_prin_id
         loadEnvVar()
-        os.system("cd containers && \
-                bash final.sh \
-                ")
         # os.system("cd containers && \
-        #         bash deleteOldDeploy.sh && \
-        #         bash setAcrAccess.sh && \
-        #         terraform init -upgrade && \
-        #         terraform plan -out main.tfplan && \
-        #         terraform apply main.tfplan && \
-        #         source ./exportTfOutput.sh && \
-        #         sleep 10 && \
         #         bash final.sh \
         #         ")
+        os.system("cd containers && \
+                bash deleteOldDeploy.sh && \
+                bash setAcrAccess.sh && \
+                terraform init -upgrade && \
+                terraform plan -out main.tfplan && \
+                terraform apply main.tfplan && \
+                source ./exportTfOutput.sh && \
+                sleep 10 && \
+                bash final.sh \
+                ")
     else:
         print("Could not load environment variables")
         return False
