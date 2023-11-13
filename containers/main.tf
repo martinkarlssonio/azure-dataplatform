@@ -143,7 +143,7 @@ resource "azurerm_role_assignment" "logic_app" {
   principal_id         = azurerm_user_assigned_identity.logic_app.principal_id
 }
 
-resource "azurerm_logic_app_workflow" "logicAppRaw" {
+resource "azurerm_logic_app_workflow" "raw" {
   name                = "logicAppRaw"
   location            = var.rg_location
   resource_group_name = azurerm_resource_group.rg.name
@@ -155,6 +155,18 @@ resource "azurerm_logic_app_workflow" "logicAppRaw" {
 
   workflow_schema = "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#"
   workflow_version = "1.0.0.0"
+
+  parameters = { "$connections" = jsonencode({
+    "${azurerm_api_connection.aci.name}" = {
+      connectionId   = "/subscriptions/${var.subscription_id}/resourceGroups/${azurerm_resource_group.rg.name}/providers/Microsoft.Web/connections/${azurerm_api_connection.aci.name}"
+      connectionName = "${azurerm_api_connection.aci.name}"
+      id             = "/subscriptions/${var.subscription_id}/providers/Microsoft.Web/locations/${azurerm_resource_group.rg.location}/managedApis/aci"
+    }
+  }) }
+  workflow_parameters = { "$connections" = jsonencode({
+    defaultValue = {}
+    type         = "Object"
+  }) }
 
   # parameters = {
   #     "actions" = jsonencode({
@@ -202,6 +214,46 @@ resource "azurerm_logic_app_workflow" "logicAppRaw" {
   #       }
   #   })
   # }
+}
+
+# https://medium.com/@jan.fiedler/how-to-implement-a-full-terraform-managed-start-stop-scheduling-for-azure-container-instances-with-39f688b334ba
+## Define the Trigger
+resource "azurerm_logic_app_trigger_recurrence" "raw" {
+  name         = "scheduled-start"
+  time_zone    = "W. Europe Standard Time"
+  logic_app_id = azurerm_logic_app_workflow.raw.id
+  frequency    = "Day"
+  interval     = 1
+
+  schedule {
+    at_these_hours   = [16, 17, 18]
+    at_these_minutes = [5, 15, 25, 35, 45, 55]
+  }
+}
+
+## Define the Action
+resource "azurerm_logic_app_action_custom" "raw" {
+  name         = "raw-aci"
+  logic_app_id = azurerm_logic_app_workflow.raw.id
+
+  body = <<BODY
+{
+    "inputs": {
+        "host": {
+            "connection": {
+                "name": "@parameters('$connections')['${azurerm_api_connection.aci.name}']['connectionId']"
+            }
+        },
+        "method": "post",
+        "path": "/subscriptions/@{encodeURIComponent('${var.subscription_id}')}/resourceGroups/@{encodeURIComponent('${azurerm_resource_group.rg.name}')}/providers/Microsoft.ContainerInstance/containerGroups/@{encodeURIComponent('${azurerm_container_group.raw.name}')}/start",
+        "queries": {
+            "x-ms-api-version": "2019-12-01"
+        }
+    },
+    "runAfter": {},
+    "type": "ApiConnection"
+    }
+BODY
 }
 
 # resource "azurerm_logic_app_workflow" "raw" {
