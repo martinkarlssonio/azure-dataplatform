@@ -37,25 +37,12 @@ try:
     from azure.storage.blob import BlobServiceClient
     account_url = "https://"+stacc_name+".blob.core.windows.net"
     blob_service_client = BlobServiceClient(account_url, credential={"account_name": stacc_name, "account_key":stacc_key})
-    container_name = "mocked-raw"
 except Exception as e:
     print("Error connecting to Blob : {}".format(e))
     logging.error("Error connecting to Blob : {}".format(e))
 
 
 def loadDataFromBlob():
-    container_name = "mocked-raw"
-    from azure.identity import DefaultAzureCredential
-    credential = DefaultAzureCredential()
-
-    from azure.storage.blob import BlobServiceClient#, BlobClient, ContainerClient
-    """ 
-    Connect to Blob Storage
-    """
-    account_url = "https://"+stacc_name+".blob.core.windows.net"
-    # Create the BlobServiceClient object
-    blob_service_client = BlobServiceClient(account_url, credential=credential)
-    # Create a unique name for the blob container
     container_name = "mocked-raw"
 
     try:

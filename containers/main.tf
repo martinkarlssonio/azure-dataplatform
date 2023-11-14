@@ -152,8 +152,8 @@ resource "azurerm_logic_app_trigger_recurrence" "raw" {
   interval     = 1
 
   schedule {
-    at_these_hours   = [16, 17, 18]
-    at_these_minutes = [5, 15, 25, 35, 45, 55]
+    at_these_hours   = [1]
+    at_these_minutes = [5]
   }
 }
 
@@ -256,8 +256,8 @@ resource "azurerm_logic_app_trigger_recurrence" "enriched" {
   interval     = 1
 
   schedule {
-    at_these_hours   = [16, 17, 18]
-    at_these_minutes = [5, 15, 25, 35, 45, 55]
+    at_these_hours   = [2]
+    at_these_minutes = [5]
   }
 }
 
@@ -359,7 +359,7 @@ resource "azurerm_logic_app_trigger_recurrence" "curated" {
   interval     = 1
 
   schedule {
-    at_these_hours   = [2]
+    at_these_hours   = [3]
     at_these_minutes = [5]
   }
 }
