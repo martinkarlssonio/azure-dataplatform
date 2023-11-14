@@ -16,10 +16,6 @@ fi
 
 export env="dev"
 rm -rf output
-echo "################# Building base image"
-cd base-deploy-image && docker build . -t deploy-image && cd ..
-#docker build . -t deploy-image
-## Create new live-deploy image (removing old one if any)
 echo "################# Removing old deployment-container and live-deploy image"
 docker rm -f $(docker ps -a | grep 'deploy-container') || echo "deploy-container deleted"
 sleep 5

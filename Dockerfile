@@ -1,12 +1,23 @@
-FROM deploy-image
+FROM fedora:38
+# Install Terraform
+RUN dnf install -y dnf-plugins-core
+RUN dnf config-manager --add-repo https://rpm.releases.hashicorp.com/fedora/hashicorp.repo
+RUN dnf -y install terraform
+
+# Install Azure CLI
+RUN dnf -y install azure-cli
+RUN dnf -y install jq
+
+# Azure CLI PIP dependencies
+RUN dnf install python3-pip -y
+RUN pip3 install azure-mgmt-logic
+
 USER root
 ADD core /core/
 ADD containers /containers
 ADD notebooks /notebooks
 ADD main.py /
 ADD setCred.sh /
-# ADD .azure /
-# ADD .azure ~/.azure
-# ADD .azure /root/.azure
+
 RUN mkdir /output
 CMD ["python3", "/main.py"]

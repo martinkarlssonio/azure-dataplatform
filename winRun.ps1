@@ -7,13 +7,6 @@ Remove-Item -Recurse -Force "output" -ErrorAction SilentlyContinue
 
 Write-Host "################# Please log in so we have correct permissions to deploy"
 az login
-# Copy-Item -Path "$HOME\.azure" -Destination ".\.azure" -Recurse -Force
-
-########################## BASE DEPLOY IMAGE
-Write-Host "################# Building base image"
-Set-Location "base-deploy-image"
-docker build . -t deploy-image
-Set-Location ..
 
 ########################## REMOVE ANY OLD CONTAINERS
 Write-Host "################# Removing old deployment-container and live-deploy image"
